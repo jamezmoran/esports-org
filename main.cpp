@@ -9,9 +9,9 @@ const int MAP_WIDTH = 7;
 const char &get_map_value(int x, int y){
   static const char map[MAP_HEIGHT][MAP_WIDTH] = {
     {'.','x','.','.','.','.','.'},
-    {'.','x','.','x','x','x','.'},
-    {'.','x','.','x','.','x','.'},
-    {'.','x','.','x','.','x','x'},
+    {'.','x','.','.','x','x','.'},
+    {'.','.','.','.','.','x','.'},
+    {'.','.','.','.','.','x','x'},
     {'.','x','.','x','.','x','.'},
     {'x','x','.','x','.','x','.'},
     {'.','x','.','x','.','x','.'},
@@ -21,8 +21,10 @@ const char &get_map_value(int x, int y){
 }
 
 struct player {
-  player(int posx, int posy, int dirx, int diry):x(posx),y(posy),direction_x(dirx), direction_y(diry) {}
+  player(int posx, int posy, int dirx, int diry):dead(false),x(posx),y(posy),direction_x(dirx), direction_y(diry) {}
   void act(){
+    if (dead)
+      return;
     int local_dirx = direction_x;
     int local_diry = direction_y;
     int local_x = x;
@@ -114,19 +116,12 @@ struct player {
   int y;
   int direction_x;
   int direction_y;
+  bool dead;
 };
 std::vector<player> players;
 player* &get_sprite_ptr(int x, int y){
-  static player* sprite_map[MAP_HEIGHT][MAP_WIDTH] = {
-    {NULL,NULL,NULL,NULL,NULL,NULL,NULL},
-    {NULL,NULL,NULL,NULL,NULL,NULL,NULL},
-    {NULL,NULL,NULL,NULL,NULL,NULL,NULL},
-    {NULL,NULL,NULL,NULL,NULL,NULL,NULL},
-    {NULL,NULL,NULL,NULL,NULL,NULL,NULL},
-    {NULL,NULL,NULL,NULL,NULL,NULL,NULL},
-    {NULL,NULL,NULL,NULL,NULL,NULL,NULL},
-    {NULL,NULL,NULL,NULL,NULL,NULL,NULL}
-  };
+  static player* sprite_map[MAP_HEIGHT][MAP_WIDTH] = { NULL };
+
   return sprite_map[y][x];
 }
 
@@ -136,7 +131,10 @@ void add_player(const player& p){
 }
 
 void draw_player(const player* p){
-  if (p->direction_y < 0){
+  if (p->dead){
+    printf("%c ", 237);
+  } 
+  else if (p->direction_y < 0){
     printf("< ");
   }
   else if (p->direction_y > 0){
