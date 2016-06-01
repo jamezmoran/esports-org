@@ -40,13 +40,15 @@ void build_vision(){
 
   if (gradient > 0 || vertical_up){
     for (double x = (obstr_x-1/gradient), y = obstr_y-1; y >= 0; --y, x = x-(double)1/gradient){
-      for (int i = std::round(x); i >= 0; --i){
+      int closest_x_index = std::round(x);
+      map[closest_x_index][(int)y] = '@';
+      for (int i = closest_x_index-1; i >= 0; --i){
         double tile_gradient = (double)(obstr_y - y) / (left_edge - i);
         if (tile_gradient >= left_edge_gradient){
           map[i][(int)y] = '@';
         } else break;
       }
-      for (int i = std::round(x); i <= obstr_x; ++i){
+      for (int i = closest_x_index+1; i <= obstr_x; ++i){
         double tile_gradient = (double)(obstr_y - y) / (right_edge - i);
         if (tile_gradient <= right_edge_gradient){
           map[i][(int)y] = '@';
